@@ -2,11 +2,14 @@ import { useState } from 'react'
 import { showAlert } from '../common/Alert.jsx'
 import './StudentManager.css'
 
-export default function StudentManager({ students, addStudent, removeStudent }) {
+export default function StudentManager({ students, addStudent, removeStudent, updateStudent }) {
   const [roll, setRoll] = useState('')
   const [name, setName] = useState('')
   const [dob, setDob] = useState('')
   const [loading, setLoading] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  const [editName, setEditName] = useState('')
+  const [editDob, setEditDob] = useState('')
 
   const handleAdd = async () => {
     if (!roll || !name || !dob) {
@@ -26,6 +29,36 @@ export default function StudentManager({ students, addStudent, removeStudent }) 
     } finally {
       setLoading(false)
     }
+  }
+
+  const startEditing = (student) => {
+    setEditingId(student.roll)
+    setEditName(student.name)
+    setEditDob(student.dob || '')
+  }
+
+  const handleSaveEdit = async (originalRoll) => {
+    if (!editName.trim()) {
+      showAlert('Name cannot be empty', 'error')
+      return
+    }
+    setLoading(true)
+    try {
+      await updateStudent(originalRoll, editName.trim(), editDob)
+      setEditingId(null)
+      showAlert('Student updated successfully!', 'success')
+    } catch (err) {
+      console.error(err)
+      showAlert(err.message || 'Failed to update student', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditName('')
+    setEditDob('')
   }
 
   const handleRemove = async (rollNum) => {
@@ -75,8 +108,30 @@ export default function StudentManager({ students, addStudent, removeStudent }) 
         ) : (
           students.map(s => (
             <li key={s.roll}>
-              <span>Roll {s.roll} – {s.name} – DOB {s.dob}</span>
-              <button onClick={() => handleRemove(s.roll)} disabled={loading}>Remove</button>
+              {editingId === s.roll ? (
+                <div className="edit-form">
+                  <span>Roll {s.roll}</span>
+                  <input 
+                    type="text" 
+                    value={editName} 
+                    onChange={e => setEditName(e.target.value)} 
+                    placeholder="Name"
+                  />
+                  <input 
+                    type="date" 
+                    value={editDob} 
+                    onChange={e => setEditDob(e.target.value)} 
+                  />
+                  <button onClick={() => handleSaveEdit(s.roll)} disabled={loading}>Save</button>
+                  <button onClick={cancelEdit} disabled={loading}>Cancel</button>
+                </div>
+              ) : (
+                <>
+                  <span>Roll {s.roll} – {s.name} – DOB {s.dob}</span>
+                  <button onClick={() => startEditing(s)} disabled={loading}>Edit</button>
+                  <button onClick={() => handleRemove(s.roll)} disabled={loading}>Remove</button>
+                </>
+              )}
             </li>
           ))
         )}

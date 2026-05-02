@@ -31,6 +31,38 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.put('/:roll', async (req, res) => {
+  const { roll } = req.params;
+  const { name, dob } = req.body;
+  if (!name && !dob) return res.status(400).json({ error: 'Name or DOB is required' });
+  try {
+    const updates = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (name) {
+      updates.push(`name = $${paramIndex++}`);
+      values.push(name.trim());
+    }
+    if (dob) {
+      updates.push(`dob = $${paramIndex++}`);
+      values.push(dob);
+    }
+
+    values.push(String(roll), 'student');
+
+    const result = await pool.query(
+      `UPDATE users SET ${updates.join(', ')}, updated_at = NOW() WHERE roll = $${paramIndex++} AND type = $${paramIndex} RETURNING id, roll, name, dob`,
+      values
+    );
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Student not found' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update student error:', err);
+    res.status(500).json({ error: 'Failed to update student' });
+  }
+});
+
 router.delete('/:roll', async (req, res) => {
   const { roll } = req.params;
   try {

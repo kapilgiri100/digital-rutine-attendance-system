@@ -1,9 +1,32 @@
 import { useState, useEffect } from 'react'
 import './WelcomePage.css'
 
+// Import images directly
+import kapilImg from './photos/kapil.jpg'
+import chandraImg from './photos/chandra.jpg'
+import pramitImg from './photos/pramit.jpg'
+import binitaImg from './photos/binita.jpg'
+
+const photos = {
+    'kapil.jpg': kapilImg,
+    'chandra.jpg': chandraImg,
+    'pramit.jpg': pramitImg,
+    'binita.jpg': binitaImg,
+    'collage.jpg': '/collage.jpg'
+}
+
 export default function WelcomePage({ onLoginClick, onManualClick }) {
     const [scrollY, setScrollY] = useState(0)
     const [showAbout, setShowAbout] = useState(false)
+    const [selectedPhoto, setSelectedPhoto] = useState(null)
+
+    const handleNameClick = (photo) => {
+        setSelectedPhoto(photos[photo])
+    }
+
+    const closePhoto = () => {
+        setSelectedPhoto(null)
+    }
 
     useEffect(() => {
         const handleScroll = () => setScrollY(window.scrollY)
@@ -104,14 +127,19 @@ export default function WelcomePage({ onLoginClick, onManualClick }) {
                 </div>
             </section>
 
-            {showAbout && (
+{showAbout && (
                 <div className="about-modal">
                     <div className="about-overlay" onClick={() => setShowAbout(false)}></div>
                     <div className="about-content">
                         <button className="modal-close" onClick={() => setShowAbout(false)}>×</button>
                         <h2>About Us</h2>
                         <p>
-                            DigitalRutin is developed by <strong>Kapil Giri, Chandra Kamal Ghimire, Pramit Giri, and Binita Gautam</strong> 
+                            DigitalRutin is developed by <strong>
+                                <span className="person-name" onClick={() => handleNameClick('kapil.jpg')}>Kapil Giri</span>, 
+                                <span className="person-name" onClick={() => handleNameClick('chandra.jpg')}>Chandra Kamal Ghimire</span>, 
+                                <span className="person-name" onClick={() => handleNameClick('pramit.jpg')}>Pramit Giri</span>, and 
+                                <span className="person-name" onClick={() => handleNameClick('binita.jpg')}>Binita Gautam</span>
+                            </strong> 
                             from Group A, Mid-West University Surkhet, Nepal. 
                             Our mission is to modernize attendance management for educational institutions with 
                             intuitive, reliable, and scalable digital solutions.
@@ -121,12 +149,26 @@ export default function WelcomePage({ onLoginClick, onManualClick }) {
                 </div>
             )}
 
-            {/* Footer */}
+{selectedPhoto && (
+                <div className="photo-modal">
+                    <div className="photo-overlay" onClick={closePhoto}></div>
+                    <div className="photo-content">
+                        <button className="photo-close" onClick={closePhoto}>×</button>
+                        <img 
+                            src={selectedPhoto} 
+                            alt="Team Member" 
+                            className="team-photo"
+                        />
+                    </div>
+                </div>
+            )}
+
+{/* Footer */}
             <footer className="footer">
                 <div className="footer-content">
                     <div className="footer-left">
                         <span className="logo-text-small">DigitalRutin</span>
-                        <span className="copyright">© 2025 Group A - Mid-West University Surkhet, Nepal</span>
+<span className="copyright">© 2025 Group A - <span className="person-name" onClick={() => handleNameClick('collage.jpg')}>Mid-West University Surkhet, Nepal</span></span>
                     </div>
                     <div className="footer-center">
                         <div className="resources">

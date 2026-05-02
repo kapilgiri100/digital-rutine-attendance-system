@@ -37,11 +37,12 @@ export default function HODDashboard(props) {
         />
       </DashboardCard>
       
-      <DashboardCard>
+<DashboardCard>
         <StudentManager 
           students={props.students} 
           addStudent={props.addStudent} 
           removeStudent={props.removeStudent} 
+          updateStudent={props.updateStudent}
         />
       </DashboardCard>
       

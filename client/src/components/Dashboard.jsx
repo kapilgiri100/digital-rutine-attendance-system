@@ -3,7 +3,7 @@ import HODDashboard from './hod/HODDashboard.jsx'
 import TeacherDashboard from './teacher/TeacherDashboard.jsx'
 import StudentDashboard from './student/StudentDashboard.jsx'
 
-export default function Dashboard({ user, onLogout, teachers, setTeachers, academicYear, onHODNameChange, schedule, setSchedule, attendance, markAttendance, students, addTeacher, removeTeacher, updateTeacher, addStudent, removeStudent, subjects, addSubject, deleteSubject, setAcademicYear }) {
+export default function Dashboard({ user, onLogout, teachers, setTeachers, academicYear, onHODNameChange, schedule, setSchedule, attendance, markAttendance, students, addTeacher, removeTeacher, updateTeacher, addStudent, removeStudent, updateStudent, subjects, addSubject, deleteSubject, setAcademicYear }) {
     return (
         <div className="app-container">
             <Header
@@ -35,7 +35,7 @@ export default function Dashboard({ user, onLogout, teachers, setTeachers, acade
                         subjects={subjects}
                     />
                 )}
-                {user.type === 'hod' && (
+{user.type === 'hod' && (
                     <HODDashboard
                         schedule={schedule}
                         setSchedule={setSchedule}
@@ -46,6 +46,7 @@ export default function Dashboard({ user, onLogout, teachers, setTeachers, acade
                         updateTeacher={updateTeacher}
                         addStudent={addStudent}
                         removeStudent={removeStudent}
+                        updateStudent={updateStudent}
                         subjects={subjects}
                         addSubject={addSubject}
                         deleteSubject={deleteSubject}

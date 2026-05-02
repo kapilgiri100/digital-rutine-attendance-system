@@ -108,6 +108,9 @@ export async function getStudents() { return apiCall('/students'); }
 export async function addStudent(roll, name, dob) {
   return apiCall('/students', { method: 'POST', body: JSON.stringify({ roll, name, dob }) });
 }
+export async function updateStudent(roll, name, dob) {
+  return apiCall(`/students/${roll}`, { method: 'PUT', body: JSON.stringify({ name, dob }) });
+}
 export async function deleteStudent(roll) {
   await apiCall(`/students/${roll}`, { method: 'DELETE' });
 }

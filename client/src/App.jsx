@@ -124,10 +124,14 @@ function App() {
     setTeachers(prev => prev.map(x => x.id === id ? t : x))
   }
 
-  // Student operations
+// Student operations
   const addStudent = async (roll, name, dob) => {
     const s = await apiService.addStudent(roll, name, dob)
     setStudents(prev => [...prev, s].sort((a, b) => Number(a.roll) - Number(b.roll)))
+  }
+  const updateStudent = async (roll, name, dob) => {
+    const s = await apiService.updateStudent(roll, name, dob)
+    setStudents(prev => prev.map(x => String(x.roll) === String(roll) ? s : x))
   }
   const removeStudent = async (roll) => {
     await apiService.deleteStudent(roll)
@@ -193,12 +197,13 @@ function App() {
               setSchedule={updateSchedule}
               attendance={attendance}
               markAttendance={markAttendance}
-              students={students}
+students={students}
               addTeacher={addTeacher}
               removeTeacher={removeTeacher}
               updateTeacher={updateTeacher}
               addStudent={addStudent}
               removeStudent={removeStudent}
+              updateStudent={updateStudent}
               subjects={subjects}
               addSubject={addSubject}
               deleteSubject={deleteSubject}
