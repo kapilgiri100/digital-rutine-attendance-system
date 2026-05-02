@@ -4,8 +4,7 @@ import './AttendanceOverview.css'
 export default function AttendanceOverview({ attendance, students, schedule, teachers, subjects = [] }) {
   const [selectedSubject, setSelectedSubject] = useState('')
 
-  // Use added subjects prop
-
+  const isBreakView = selectedSubject === '__break__'
 
   // Get all days/time slots where selected subject was taught and has attendance data
   const attendanceSlots = useMemo(() => {
@@ -16,14 +15,18 @@ export default function AttendanceOverview({ attendance, students, schedule, tea
     // Loop schedule for subject locations
     Object.entries(schedule).forEach(([dayName, daySchedule]) => {
       Object.entries(daySchedule || {}).forEach(([timeSlot, cell]) => {
-        if (cell.subject === selectedSubject && attendance[dayName]?.[timeSlot]) {
+        if (isBreakView) {
+          if (cell?.type === 'break') {
+            slots.push({ dayName, timeSlot })
+          }
+        } else if (cell.subject === selectedSubject && attendance[dayName]?.[timeSlot]) {
           slots.push({ dayName, timeSlot })
         }
       })
     })
 
     return slots
-  }, [selectedSubject, schedule, attendance])
+  }, [selectedSubject, schedule, attendance, isBreakView])
 
   // Build attendance data for each student
   const attendanceData = useMemo(() => {
@@ -77,6 +80,7 @@ export default function AttendanceOverview({ attendance, students, schedule, tea
             className="subject-select"
           >
             <option value="">Select subject</option>
+            <option value="__break__">Breaks</option>
             {subjects.map(sub => (
               <option key={sub.id} value={sub.name}>{sub.name}</option>
             ))}
@@ -88,18 +92,25 @@ export default function AttendanceOverview({ attendance, students, schedule, tea
       {selectedSubject && (
         <div className="attendance-summary">
           <div className="summary-stat">
-            <span className="stat-label">Total Classes</span>
+            <span className="stat-label">Total {isBreakView ? 'Breaks' : 'Classes'}</span>
             <span className="stat-value">{summary.totalClasses}</span>
           </div>
-          <div className="summary-stat">
-            <span className="stat-label">Avg. Attendance</span>
-            <span className="stat-value">{summary.avgAttendance}%</span>
-          </div>
+          {!isBreakView && (
+            <div className="summary-stat">
+              <span className="stat-label">Avg. Attendance</span>
+              <span className="stat-value">{summary.avgAttendance}%</span>
+            </div>
+          )}
+          {isBreakView && (
+            <div className="summary-note">
+              Break slots do not have attendance records.
+            </div>
+          )}
         </div>
       )}
 
       {/* Attendance Table - Tabular Format */}
-      {selectedSubject && attendanceSlots.length > 0 && (
+      {selectedSubject && attendanceSlots.length > 0 && !isBreakView && (
         <div className="attendance-table-container">
           <table className="attendance-table">
             <thead>
@@ -128,8 +139,33 @@ export default function AttendanceOverview({ attendance, students, schedule, tea
         </div>
       )}
 
-      {selectedSubject && attendanceSlots.length === 0 && (
+      {selectedSubject && isBreakView && attendanceSlots.length > 0 && (
+        <div className="attendance-table-container">
+          <table className="attendance-table">
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {attendanceSlots.map(slot => (
+                <tr key={`${slot.dayName}-${slot.timeSlot}`}>
+                  <td>{slot.dayName}</td>
+                  <td>{slot.timeSlot}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {selectedSubject && !isBreakView && attendanceSlots.length === 0 && (
         <p className="no-data">No attendance records found for this subject.</p>
+      )}
+
+      {selectedSubject && isBreakView && attendanceSlots.length === 0 && (
+        <p className="no-data">No break slots found in the schedule.</p>
       )}
 
       {!selectedSubject && (

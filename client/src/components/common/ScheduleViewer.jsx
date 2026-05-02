@@ -52,14 +52,17 @@ export default function ScheduleViewer({ schedule, user, teachers, title = "Clas
                 <tr key={day}>
                   <td className="day-cell">{day}</td>
                   {allSlotLabels.map(slotLabel => {
-                    const cell = schedule[day]?.[slotLabel] || { subject: '', teacherId: '' }
+                    const cell = schedule[day]?.[slotLabel]
+                    const isBreak = cell && cell.type === 'break'
                     const myClass = isMyClass(day, slotLabel)
-                    const hasClass = cell.subject && cell.teacherId
+                    const hasClass = cell && !isBreak && cell.subject && cell.teacherId
 
                     return (
                       <td key={slotLabel}>
-                        <div className={`schedule-cell ${hasClass ? 'has-class' : 'empty'} ${myClass ? 'my-class' : ''}`}>
-                          {cell.subject ? (
+                        <div className={`schedule-cell ${hasClass ? 'has-class' : 'empty'} ${myClass ? 'my-class' : ''} ${isBreak ? 'break' : ''}`}>
+                          {isBreak ? (
+                            <div className="break-name">Break</div>
+                          ) : cell && cell.subject ? (
                             <>
                               <div className="subject-name">{cell.subject}</div>
                               <div className="teacher-name">{getTeacherName(cell.teacherId)}</div>

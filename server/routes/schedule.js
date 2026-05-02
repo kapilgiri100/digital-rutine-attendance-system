@@ -30,11 +30,13 @@ router.put('/', async (req, res) => {
       if (typeof daySchedule === 'object') {
         for (const slot in daySchedule) {
           const entry = daySchedule[slot];
-          if (entry && entry.teacherId) {
-            teacherIds.add(entry.teacherId);
-          }
-          if (entry && entry.subject) {
-            subjects.add(entry.subject);
+          if (entry && entry.type !== 'break') {
+            if (entry.teacherId) {
+              teacherIds.add(entry.teacherId);
+            }
+            if (entry.subject) {
+              subjects.add(entry.subject);
+            }
           }
         }
       }

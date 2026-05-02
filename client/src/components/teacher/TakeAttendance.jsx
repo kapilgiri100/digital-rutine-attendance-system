@@ -20,6 +20,10 @@ export default function TakeAttendance({ schedule, students, markAttendance, use
     .filter(([_, cell]) => cell.teacherId === user.id && cell.subject === selectedSubject)
     .map(([time, cell]) => ({ time, ...cell }))
 
+  const breakSlotsToday = Object.entries(teacherSlots)
+    .filter(([_, cell]) => cell?.type === 'break')
+    .map(([time]) => time)
+
   // Load existing attendance when date/time changes
   useEffect(() => {
     if (date && selectedTime) {
@@ -102,8 +106,8 @@ export default function TakeAttendance({ schedule, students, markAttendance, use
           <div className="attendance-form">
             <div className="form-group">
               <label>Select Subject *</label>
-              <select 
-                value={selectedSubject} 
+              <select
+                value={selectedSubject}
                 onChange={(e) => handleSubjectChange(e.target.value)}
                 disabled={loading}
               >
@@ -118,9 +122,9 @@ export default function TakeAttendance({ schedule, students, markAttendance, use
               <>
                 <div className="form-group">
                   <label>Date *</label>
-                  <input 
-                    type="date" 
-                    value={date} 
+                  <input
+                    type="date"
+                    value={date}
                     onChange={(e) => setDate(e.target.value)}
                     disabled={loading}
                   />
@@ -128,8 +132,8 @@ export default function TakeAttendance({ schedule, students, markAttendance, use
 
                 <div className="form-group">
                   <label>Time Slot *</label>
-                  <select 
-                    value={selectedTime} 
+                  <select
+                    value={selectedTime}
                     onChange={(e) => setSelectedTime(e.target.value)}
                     disabled={loading}
                   >
@@ -144,6 +148,16 @@ export default function TakeAttendance({ schedule, students, markAttendance, use
                     <p className="no-slots">No classes scheduled for {selectedSubject} on {dayName}</p>
                   )}
                 </div>
+                {breakSlotsToday.length > 0 && (
+                  <div className="form-group break-list">
+                    <label>Break Slots on {dayName}:</label>
+                    <div className="break-times">
+                      {breakSlotsToday.map(time => (
+                        <span key={time} className="break-label">{time}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
@@ -183,7 +197,7 @@ export default function TakeAttendance({ schedule, students, markAttendance, use
                 ))}
               </div>
               <div className="submit-section">
-                <button 
+                <button
                   onClick={handleSubmit}
                   disabled={loading}
                   className="submit-btn"

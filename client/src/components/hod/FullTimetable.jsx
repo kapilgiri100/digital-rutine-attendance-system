@@ -13,12 +13,13 @@ export default function FullTimetable({ schedule, teachers }) {
               <tr key={day}>
                 <td className="day-cell">{day}</td>
                 {slots.map(t => {
-                  const cell = schedule[day][t]
-                  const teacher = teachers.find(x => String(x.id) === String(cell.teacherId))
+                  const cell = schedule[day] && schedule[day][t]
+                  const isBreak = cell && cell.type === 'break'
+                  const teacher = !isBreak && cell ? teachers.find(x => String(x.id) === String(cell.teacherId)) : null
                   return (
                     <td key={t}>
-                      <div className={`subject-badge ${cell.subject ? 'class' : 'break'}`}>
-                        {cell.subject || ''}<br /><small>{teacher ? teacher.name : ''}</small>
+                      <div className={`subject-badge ${isBreak ? 'break' : 'class'}`}>
+                        {isBreak ? 'Break' : (cell && cell.subject ? cell.subject : '')}<br /><small>{teacher ? teacher.name : ''}</small>
                       </div>
                     </td>
                   )

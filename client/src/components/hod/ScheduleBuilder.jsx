@@ -7,6 +7,7 @@ export default function ScheduleBuilder({ schedule, setSchedule, teachers, subje
   const [day, setDay] = useState(days[1] || 'Monday')
   const [teacherId, setTeacherId] = useState('')
   const [selectedSubject, setSelectedSubject] = useState('')
+  const [slotType, setSlotType] = useState('class')
   const [loading, setLoading] = useState(false)
 
   // Flexible slot generation
@@ -36,43 +37,55 @@ export default function ScheduleBuilder({ schedule, setSchedule, teachers, subje
       const slotData = schedule[day][selectedSlot]
       setTeacherId(slotData.teacherId?.toString() || '')
       setSelectedSubject(slotData.subject || '')
+      setSlotType(slotData.type || 'class')
     } else {
       setTeacherId('')
       setSelectedSubject('')
+      setSlotType('class')
     }
   }, [day, selectedSlot, schedule])
 
   const handleSave = async () => {
-    if (!teacherId || !selectedSlot) {
-      showAlert('Please generate slots and select teacher/slot', 'error')
+    if (!selectedSlot) {
+      showAlert('Please generate slots and select a slot', 'error')
       return
     }
 
-    const subject = selectedSubject
-    if (!subject) {
-      showAlert('Please select subject', 'error')
-      return
+    if (slotType === 'class') {
+      if (!teacherId) {
+        showAlert('Please select teacher', 'error')
+        return
+      }
+      const subject = selectedSubject
+      if (!subject) {
+        showAlert('Please select subject', 'error')
+        return
+      }
+
+      // Validate that teacher exists
+      const teacherExists = teachers && teachers.some(t => t.id === Number(teacherId))
+      if (!teacherExists) {
+        showAlert('Selected teacher does not exist', 'error')
+        return
+      }
+
+      // Validate that subject exists
+      const subjectExists = subjects && subjects.some(s => s.name === subject)
+      if (!subjectExists) {
+        showAlert('Selected subject does not exist', 'error')
+        return
+      }
     }
 
-    // Validate that teacher exists
-    const teacherExists = teachers && teachers.some(t => t.id === Number(teacherId))
-    if (!teacherExists) {
-      showAlert('Selected teacher does not exist', 'error')
-      return
-    }
-
-    // Validate that subject exists
-    const subjectExists = subjects && subjects.some(s => s.name === subject)
-    if (!subjectExists) {
-      showAlert('Selected subject does not exist', 'error')
-      return
-    }
+    const entry = slotType === 'break'
+      ? { type: 'break' }
+      : { teacherId: Number(teacherId), subject: selectedSubject, type: 'class' }
 
     const newSchedule = {
       ...schedule,
       [day]: {
         ...schedule[day],
-        [selectedSlot]: { teacherId: Number(teacherId), subject }
+        [selectedSlot]: entry
       }
     }
 
@@ -182,21 +195,34 @@ export default function ScheduleBuilder({ schedule, setSchedule, teachers, subje
 
       {/* Teacher + Subject */}
       {selectedSlot && (
-        <div className="form-row">
-          <select value={teacherId} onChange={(e) => setTeacherId(e.target.value)} disabled={loading}>
-            <option value="">Pick teacher</option>
-            {teachers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-          </select>
-          <select value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)} disabled={loading}>
-            <option value="">Subject</option>
-            {subjects.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
-          </select>
-        </div>
+        <>
+          <div className="form-row">
+            <label>
+              Type:
+              <select value={slotType} onChange={(e) => setSlotType(e.target.value)} disabled={loading}>
+                <option value="class">Class</option>
+                <option value="break">Break</option>
+              </select>
+            </label>
+          </div>
+          {slotType === 'class' && (
+            <div className="form-row">
+              <select value={teacherId} onChange={(e) => setTeacherId(e.target.value)} disabled={loading}>
+                <option value="">Pick teacher</option>
+                {teachers.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+              <select value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)} disabled={loading}>
+                <option value="">Subject</option>
+                {subjects.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
+              </select>
+            </div>
+          )}
+        </>
       )}
 
       {/* Actions */}
       <div className="form-actions">
-        <button onClick={handleSave} disabled={loading || !teacherId || !selectedSlot} className="btn-save">
+        <button onClick={handleSave} disabled={loading || !selectedSlot || (slotType === 'class' && !teacherId)} className="btn-save">
           {loading ? 'Saving...' : 'Save Slot'}
         </button>
         {selectedSlot && (

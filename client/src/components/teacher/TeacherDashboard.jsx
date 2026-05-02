@@ -91,14 +91,17 @@ export default function TeacherDashboard({
                   <tr key={day}>
                     <td className="day-cell">{day}</td>
                     {allSlotLabels.map(time => {
-                      const cell = schedule[day]?.[time] || { subject: '', teacherId: '' }
-                      const myClass = isMyClass(day, time)
-                      const hasClass = cell.subject && cell.teacherId
+                      const cell = schedule[day]?.[time]
+                      const isBreak = cell?.type === 'break'
+                      const myClass = !isBreak && isMyClass(day, time)
+                      const hasClass = cell && !isBreak && cell.subject && cell.teacherId
 
                       return (
                         <td key={time}>
-                          <div className={`schedule-cell ${hasClass ? 'has-class' : 'empty'} ${myClass ? 'my-class' : ''}`}>
-                            {cell.subject ? (
+                          <div className={`schedule-cell ${hasClass ? 'has-class' : 'empty'} ${myClass ? 'my-class' : ''} ${isBreak ? 'break' : ''}`}>
+                            {isBreak ? (
+                              <span className="break-label">Break</span>
+                            ) : cell && cell.subject ? (
                               <>
                                 <div className="subject-name">{cell.subject}</div>
                                 <div className="teacher-name">{getTeacherName(cell.teacherId)}</div>
