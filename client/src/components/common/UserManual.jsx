@@ -174,19 +174,19 @@ export default function UserManual({ onBack }) {
                         <div className="faq">
                             <div className="faq-item">
                                 <h4>Q: I forgot my password. What should I do?</h4>
-                                <p>A: Contact your HOD or system administrator to reset your password.</p>
+                                <p>- Contact your HOD or system administrator to reset your password.</p>
                             </div>
                             <div className="faq-item">
                                 <h4>Q: How do I mark attendance for absent students?</h4>
-                                <p>A: Teachers can mark students as absent by selecting "Absent" in the attendance interface.</p>
+                                <p>- Teachers can mark students as absent by selecting "Absent" in the attendance interface.</p>
                             </div>
                             <div className="faq-item">
                                 <h4>Q: Can I view attendance reports?</h4>
-                                <p>A: Yes, teachers and HOD can generate and view detailed attendance reports.</p>
+                                <p>- Yes, teachers and HOD can generate and view detailed attendance reports.</p>
                             </div>
                             <div className="faq-item">
                                 <h4>Q: How do I update student information?</h4>
-                                <p>A: Only HOD can update student and teacher information through the management panels.</p>
+                                <p>- Only HOD can update student and teacher information through the management panels.</p>
                             </div>
                         </div>
                     </section>

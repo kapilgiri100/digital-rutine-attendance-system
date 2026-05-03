@@ -212,13 +212,13 @@
 }
 
 .faq-item h4 {
-    color: #00d4ff;
+    color: #e72670;
     margin: 0 0 0.5rem 0;
     font-size: 1.1rem;
 }
 
 .faq-item p {
-    color: #e0e0e0;
+    color: lch(51.17% 72.96 134.89);
     margin: 0;
     line-height: 1.6;
 }
