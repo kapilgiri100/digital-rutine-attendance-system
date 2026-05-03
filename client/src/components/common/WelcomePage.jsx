@@ -156,9 +156,10 @@ export default function WelcomePage({ onLoginClick, onManualClick }) {
                         <button className="photo-close" onClick={closePhoto}>×</button>
                         <img 
                             src={selectedPhoto} 
-                            alt="Team Member" 
+                            alt={selectedPhoto === '/collage.jpg' ? 'College Picture' : 'Team Member'} 
                             className="team-photo"
                         />
+
                     </div>
                 </div>
             )}
