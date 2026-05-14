@@ -11,6 +11,8 @@ export default function TakeAttendance({ schedule, students, markAttendance, use
   const [presentRolls, setPresentRolls] = useState({})
   const [loading, setLoading] = useState(false)
   const [existingAttendance, setExistingAttendance] = useState(null)
+  const [showStudentsTable, setShowStudentsTable] = useState(true)
+
 
   const dayName = getNepalDayOfWeek(date)
 
@@ -52,7 +54,9 @@ export default function TakeAttendance({ schedule, students, markAttendance, use
     setSelectedSubject(subject)
     setSelectedTime('')
     setPresentRolls({})
+    setShowStudentsTable(true)
   }
+
 
   const toggleStudent = (roll) => {
     setPresentRolls(prev => ({
@@ -72,12 +76,14 @@ export default function TakeAttendance({ schedule, students, markAttendance, use
       const presentRollsArray = Object.keys(presentRolls).filter(roll => presentRolls[roll] === true)
       await markAttendance(dayName, selectedTime, presentRollsArray)
       showAlert(`Attendance saved for ${selectedSubject} at ${selectedTime} (${existingAttendance ? 'Updated' : 'New'})`, 'success')
+      setShowStudentsTable(false)
     } catch (err) {
       showAlert('Failed to save attendance', 'error')
       console.error(err)
     } finally {
       setLoading(false)
     }
+
   }
 
   // Get unique teacher's subjects from schedule
@@ -174,28 +180,49 @@ export default function TakeAttendance({ schedule, students, markAttendance, use
             )}
           </div>
 
-          {selectedTime && students.length > 0 && (
+          {showStudentsTable && selectedTime && students.length > 0 && (
             <div className="students-section">
+
               <div className="students-header">
-                <h4>Students ({Object.keys(presentRolls).length}/{students.length})</h4>
+                <h4>Students ({students.length})</h4>
                 <span className="present-count">
                   Present: {Object.values(presentRolls).filter(Boolean).length}
                 </span>
               </div>
-              <div className="roll-grid">
-                {students.map(student => (
-                  <label key={student.roll} className={`roll-chip ${presentRolls[student.roll] ? 'present' : 'absent'}`}>
-                    <input
-                      type="checkbox"
-                      checked={presentRolls[student.roll] || false}
-                      onChange={() => toggleStudent(student.roll)}
-                      disabled={loading}
-                    />
-                    <span>{student.roll}</span>
-                    <span>{student.name}</span>
-                  </label>
-                ))}
+
+              <div className="students-table-wrap">
+                <table className="students-table">
+                  <thead>
+                    <tr>
+                      <th className="col-roll">Roll No.</th>
+                      <th className="col-name">Name</th>
+                      <th className="col-present">Present</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {students
+                      .slice()
+                      .sort((a, b) => Number(a.roll) - Number(b.roll))
+                      .map(student => (
+                        <tr key={student.roll}>
+                          <td className="col-roll">
+                            <span className="roll-text">{student.roll}</span>
+                          </td>
+                          <td className="col-name">{student.name}</td>
+                          <td className="col-present">
+                            <input
+                              type="checkbox"
+                              checked={presentRolls[student.roll] || false}
+                              onChange={() => toggleStudent(student.roll)}
+                              disabled={loading}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
               </div>
+
               <div className="submit-section">
                 <button
                   onClick={handleSubmit}

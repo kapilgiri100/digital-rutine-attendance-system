@@ -95,3 +95,56 @@
     border-radius: 8px;
     cursor: pointer
 }
+
+/* Students table */
+.students-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 16px;
+}
+
+.students-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.students-table thead th {
+    background: #4f46e5;
+    color: white;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.students-table tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #374151;
+    white-space: nowrap;
+}
+
+.students-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.col-roll {
+    font-weight: 600;
+}
+
+.col-present {
+    text-align: center;
+    width: 120px;
+}
+
+.col-present input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .col-present {
+        width: 90px;
+    }
+}
